@@ -92,13 +92,13 @@ ENV clamav_jar_url_env=${release_maven_path}/kernel/kernel-virusscanner-clamav/$
 ENV clamav_client_url_env=https://oss.sonatype.org/service/local/repositories/releases/content/xyz/capybara/clamav-client/1.0.4/clamav-client-1.0.4.jar
 
 # environment variable for sdk url
-ENV sdk_jar_url_env=https://oss.sonatype.org/service/local/repositories/snapshots/content/io/mosip/mock/sdk/mock-sdk/1.2.0-SNAPSHOT/mock-sdk-1.2.0-20210730.093319-3.jar
+# ENV sdk_jar_url_env=https://oss.sonatype.org/service/local/repositories/snapshots/content/io/mosip/mock/sdk/mock-sdk/1.2.0-SNAPSHOT/mock-sdk-1.2.0-20210730.093319-3.jar
 
 # environment variable for cache URL 
 ENV cache_url_env=https://repo1.maven.org/maven2/com/hazelcast/hazelcast-all/3.12.12/hazelcast-all-3.12.12.jar
 
 # environment variable for cache URL
-ENV biosdk_client_url_env=https://oss.sonatype.org/service/local/repositories/snapshots/content/io/mosip/biosdk/biosdk-client/1.2.0-SNAPSHOT/biosdk-client-1.2.0-20210727.071028-253-jar-with-dependencies.jar
+# ENV biosdk_client_url_env=https://oss.sonatype.org/service/local/repositories/snapshots/content/io/mosip/biosdk/biosdk-client/1.2.0-SNAPSHOT/biosdk-client-1.2.0-20210727.071028-253-jar-with-dependencies.jar
 
 # Create all the Jar paths
 RUN mkdir -p ${biosdk_client_zip_path}/biosdk-client ${biosdk_lib_zip_path}/biosdk-lib ${cache_path} ${ida_sh_path} ${hsm_client_path} ${kernel_jar_path} ${test_jar_path} ${idobject_jar_path} ${regproc_jar_path} ${sdk_path} ${icu4j_jar_path} ${clamav_path}
@@ -106,6 +106,13 @@ RUN mkdir -p ${biosdk_client_zip_path}/biosdk-client ${biosdk_lib_zip_path}/bios
 # Copy all the respective jars to the location
 
 COPY /src/biosdk/install.sh ${biosdk_client_zip_path}/biosdk-client/
+COPY /src/biosdk/mock-sdk-1.1.5.jar ${biosdk_lib_zip_path}/biosdk-lib/
+COPY /src/biosdk/mock-sdk-1.1.5.jar ${sdk_path}/mock-sdk.jar
+
+# Copy tech5 biosdk lib
+COPY /src/biosdk/tech5-biosdk-lib.zip ${biosdk_lib_zip_path}/
+
+COPY /src/biosdk/biosdk-client-1.1.5.2.jar ${biosdk_client_zip_path}/biosdk-client/
 
 COPY /src/deployment/docker/id-authentication/* ${ida_sh_path}/
 
@@ -143,9 +150,9 @@ wget ${cache_url_env} -O ${cache_path}/cache-provider.jar &&\
 
 echo "Downloaded hazlecast cache jar" &&\
 
-wget ${sdk_jar_url_env} -O ${sdk_path}/mock-sdk.jar &&\
-
-echo "Downloaded Mock-sdk-jar" &&\
+# wget ${sdk_jar_url_env} -O ${sdk_path}/mock-sdk.jar &&\
+#
+# echo "Downloaded Mock-sdk-jar" &&\
 
 wget ${clamav_jar_url_env} -O ${clamav_path}/kernel-virusscanner-clamav.jar &&\
 
@@ -155,9 +162,10 @@ wget ${clamav_client_url_env} -O ${clamav_path}/clamav.jar &&\
 
 echo "Downloaded ClamAV client" &&\
 
-wget ${biosdk_client_url_env} -P ${biosdk_client_zip_path}/biosdk-client/ &&\
-
-echo "Downloaded biosdk client creating the zip" &&\
+# Removed as the biosdk was coming from snapshot, that are intended to changes
+# wget ${biosdk_client_url_env} -P ${biosdk_client_zip_path}/biosdk-client/ &&\
+#
+# echo "Downloaded biosdk client creating the zip" &&\
 
 zip -r -j ${biosdk_client_zip_path}/biosdk-client.zip ${biosdk_client_zip_path}/biosdk-client/* &&\
 
@@ -167,7 +175,7 @@ rm -rf ${biosdk_client_zip_path}/biosdk-client &&\
 
 echo "folder biosdk client deleted" &&\
 
-wget ${sdk_jar_url_env} -P ${biosdk_lib_zip_path}/biosdk-lib/ &&\
+# wget ${sdk_jar_url_env} -P ${biosdk_lib_zip_path}/biosdk-lib/ &&\
 
 zip -r -j ${biosdk_lib_zip_path}/biosdk-lib.zip ${biosdk_lib_zip_path}/biosdk-lib/* &&\
 
